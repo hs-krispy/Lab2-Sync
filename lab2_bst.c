@@ -63,7 +63,26 @@ lab2_node * lab2_node_create(int key) {
  */
 int lab2_node_insert(lab2_tree *tree, lab2_node *new_node){
     // You need to implement lab2_node_insert function.
-
+    lab2_node * comp = this -> root; // 비교 노드를 설정
+    while(true)
+    {
+        if(comp -> data < new_node -> data) //루트의 key값보다 새로운 노드의 키값이 더 클때
+        {
+            if(comp -> right == NULL) // 루트의 오른쪽 자식이 없을 때
+            {
+                comp -> right = new_node;
+                break;
+            } else comp = comp -> right; // 비교 노드를 오른쪽 자식 노드로 변경
+            else
+            {
+                {
+                if(comp -> left == NULL)
+                    comp -> left = new_node;
+                    break;
+                } else comp = comp -> left;
+            }
+        }
+    }
 }
 
 /* 
