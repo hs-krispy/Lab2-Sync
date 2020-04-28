@@ -100,7 +100,32 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
  */
 lab2_node *lab2_node_remove(lab2_tree *tree, int key) {
     // You need to implement lab2_node_remove function.
-    
+    if (tree == NULL) {
+        return tree;
+    }
+    if (key < tree->key) {
+        tree->left = lab2_node_remove(tree->left, key);
+    } else if (key > tree->key) {
+        tree->right = lab2_node_remove(tree->right, key);
+    } else {
+        if (tree->left == NULL) { // 왼쪽 자식이 없을때
+            Node *temp = tree->right;
+            tree = NULL;
+            return temp; // 오른쪽 자식을 리턴(삭제할 노드의 부모노드와 연결)
+        } else if (tree->right == NULL) { // 오른쪽 자식이 없을때
+            Node *temp = tree->left;
+            tree = NULL;
+            return temp; // 왼쪽 자식을 리턴
+        }
+        // 왼쪽과 오른쪽 자식이 모두 있는 경우
+        lab2_node *temp = tree->right;
+        while (temp->left != NULL) {
+            temp = temp->left; // 오른쪽 자식의 가장 작은 값
+        }
+        tree->key = temp->key; // 삭제할 노드의 값을 오른쪽 자식의 가장 작은 값으로 바꿈
+        tree->right = lab2_node_remove(tree->right, temp->key); // 바꾼 값을 가진 노드를 찾아서 지움
+    }
+    return tree;
 }
 
 /* 
