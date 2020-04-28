@@ -98,8 +98,9 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
  *  @param int key          : key value that you want to delete. 
  *  @return                 : status (success or fail)
  */
-int lab2_node_remove(lab2_tree *tree, int key) {
+lab2_node *lab2_node_remove(lab2_tree *tree, int key) {
     // You need to implement lab2_node_remove function.
+    
 }
 
 /* 
