@@ -28,6 +28,10 @@
  */
 int lab2_node_print_inorder(lab2_tree *tree) {
     // You need to implement lab2_node_print_inorder function.
+    if(tree == NULL) return;
+    lab2_node_print_inorder(tree -> left);
+    printf("%d ", tree -> key);
+    lab2_node_print_inorder(tree -> right);
 }
 
 /*
