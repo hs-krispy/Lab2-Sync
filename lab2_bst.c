@@ -186,8 +186,14 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
  *  @param lab2_tree *tree  : bst which you want to delete. 
  *  @return                 : status(success or fail)
  */
-void lab2_tree_delete(lab2_tree *tree) {
-    // You need to implement lab2_tree_delete function.
+void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
+    lab2_node *temp = tree -> root;
+    if(!temp) return;
+    while(temp) {
+        int key = temp -> key;
+        lab2_node_remove(tree, key);
+        temp = tree -> root;
+    }
 }
 
 /*
