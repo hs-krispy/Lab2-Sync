@@ -61,28 +61,29 @@ lab2_node * lab2_node_create(int key) {
  *  @param lab2_node *new_node  : bst node which you need to insert. 
  *  @return                 : satus (success or fail)
  */
-int lab2_node_insert(lab2_tree *tree, lab2_node *new_node){
-    // You need to implement lab2_node_insert function.
-    lab2_node * comp = this -> root; // 비교 노드를 설정
-    while(true)
-    {
-        if(comp -> data < new_node -> data) //루트의 key값보다 새로운 노드의 키값이 더 클때
-        {
-            if(comp -> right == NULL) // 루트의 오른쪽 자식이 없을 때
-            {
-                comp -> right = new_node;
-                break;
-            } else comp = comp -> right; // 비교 노드를 오른쪽 자식 노드로 변경
-            else
-            {
-                {
-                if(comp -> left == NULL)
-                    comp -> left = new_node;
+int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
+    lab2_node *temp = tree -> root;
+    if(temp == NULL) {
+        tree -> root = new_node; // root가 NULL이면 새로운 노드를 root로 설정
+        return SUCCESS;
+    } else {
+        while(1) {
+            if(temp -> key < new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 클 때
+                if(!(temp -> right)) { // 비교노드의 오른쪽 자식이 NULL 일 때
+                    temp -> right =  new_node;
                     break;
-                } else comp = comp -> left;
+                }
+                temp = temp -> right;
+            } else if(temp -> key > new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 작을 때
+                if(!(temp -> left)) { // 비교노드의 왼쪽 자식이 NULL 일 때
+                    temp -> left = new_node;
+                    break;
+                }
+                temp = temp -> left;
             }
         }
     }
+    return SUCCESS;
 }
 
 /* 
