@@ -110,19 +110,23 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
     } else {
         while(1) {
             if(temp -> key < new_node -> key) {
-                pthread_mutex_lock(&temp -> mutex);
                 if(!(temp -> right)) {
+                    pthread_mutex_lock(&temp -> mutex);
                     temp -> right =  new_node;
+                    pthread_mutex_unlock(&temp -> mutex);
                     break;
                 }
+                pthread_mutex_lock(&temp -> mutex);
                 temp = temp -> right;
                 pthread_mutex_unlock(&temp -> mutex);
             } else if(temp -> key > new_node -> key) {
-                pthread_mutex_lock(&temp -> mutex);
                 if(!(temp -> left)) {
+                    pthread_mutex_lock(&temp -> mutex);
                     temp -> left = new_node;
+                    pthread_mutex_unlock(&temp -> mutex);
                     break;
                 }
+                pthread_mutex_lock(&temp -> mutex);
                 temp = temp -> left;
                 pthread_mutex_unlock(&temp -> mutex);
             }
@@ -223,40 +227,55 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
         return LAB2_SUCCESS;
     }
     while(temp -> key != key) {
-        pthread_mutex_lock(&temp -> mutex);
         if(temp -> key < key) {
+            pthread_mutex_lock(&temp -> mutex);
             parent = temp;
             temp = temp -> right;
+            pthread_mutex_unlock(&temp -> mutex);
         } else {
+            pthread_mutex_lock(&temp -> mutex);
             parent = temp;
             temp = temp -> left;
+            pthread_mutex_unlock(&temp -> mutex);
         }
-        pthread_mutex_unlock(&temp -> mutex);
+        
     }
     if(temp -> left == NULL && temp -> right == NULL) { // 아래에 자식 노드가 없을 경우
-        pthread_mutex_lock(&temp -> mutex);
         if(parent -> left == temp) {
+            pthread_mutex_lock(&temp -> mutex);
             parent -> left = NULL;
+            pthread_mutex_unlock(&temp -> mutex);
         }
         if(parent -> right == temp) {
+            pthread_mutex_lock(&temp -> mutex);
             parent -> right == NULL;
+            pthread_mutex_unlock(&temp -> mutex);
         }
+        pthread_mutex_lock(&temp -> mutex);
         lab2_node_delete(temp);
         pthread_mutex_unlock(&temp -> mutex);
         return LAB2_SUCCESS;
     }
     if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
-        pthread_mutex_lock(&temp -> mutex);
         if(temp -> left) {
+            pthread_mutex_lock(&temp -> mutex);
             child = temp -> left;
+            pthread_mutex_unlock(&temp -> mutex);
         } else {
+            pthread_mutex_lock(&temp -> mutex);
             child = temp -> right;
+            pthread_mutex_unlock(&temp -> mutex);
         }
         if(parent -> left == temp) {
+            pthread_mutex_lock(&temp -> mutex);
             parent -> left = child;
+            pthread_mutex_unlock(&temp -> mutex);
         } else {
+            pthread_mutex_lock(&temp -> mutex);
             parent -> right = child;
+            pthread_mutex_unlock(&temp -> mutex);
         }
+        pthread_mutex_lock(&temp -> mutex);
         lab2_node_delete(temp);
         pthread_mutex_unlock(&temp -> mutex);
         return LAB2_SUCCESS;
