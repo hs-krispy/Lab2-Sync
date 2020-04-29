@@ -70,9 +70,28 @@ lab2_node * lab2_node_create(int key) {
  *  @param lab2_node *new_node  : bst node which you need to insert. 
  *  @return                 : satus (success or fail)
  */
-int lab2_node_insert(lab2_tree *tree, lab2_node *new_node){
-    // You need to implement lab2_node_insert function.
-
+int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
+    lab2_node *temp = tree -> root;
+    if(temp == NULL) {
+        tree -> root = new_node; // root가 NULL이면 새로운 노드를 root로 설정
+    } else {
+        while(1) {
+            if(temp -> key < new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 클 때
+                if(!(temp -> right)) { // 비교노드의 오른쪽 자식이 NULL 일 때
+                    temp -> right =  new_node;
+                    break;
+                }
+                temp = temp -> right;
+            } else if(temp -> key > new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 작을 때
+                if(!(temp -> left)) { // 비교노드의 왼쪽 자식이 NULL 일 때
+                    temp -> left = new_node;
+                    break;
+                }
+                temp = temp -> left;
+            }
+        }
+    }
+    return SUCCESS;
 }
 
 /* 
