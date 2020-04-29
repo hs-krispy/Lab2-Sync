@@ -204,7 +204,7 @@ void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
  *  @param lab2_tree *tree  : bst node which you want to remove. 
  *  @return                 : status(success or fail)
  */
-void lab2_node_delete(lab2_node *node) {
-    // You need to implement lab2_node_delete function.
+void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
+    free(node);
 }
 
