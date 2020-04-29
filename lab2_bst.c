@@ -65,7 +65,6 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
     lab2_node *temp = tree -> root;
     if(temp == NULL) {
         tree -> root = new_node; // root가 NULL이면 새로운 노드를 root로 설정
-        return SUCCESS;
     } else {
         while(1) {
             if(temp -> key < new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 클 때
