@@ -39,6 +39,9 @@ int lab2_node_print_inorder(lab2_tree *tree) {
  */
 lab2_tree *lab2_tree_create() {
     // You need to implement lab2_tree_create function.
+    lab2_tree *tree = (lab2_tree *) malloc(sizeof(lab2_tree));
+    tree -> root = NULL;
+    return tree;
 }
 
 /*
@@ -51,6 +54,12 @@ lab2_tree *lab2_tree_create() {
  */
 lab2_node * lab2_node_create(int key) {
     // You need to implement lab2_node_create function.
+    lab2_node *node = (lab2_node *) malloc(sizeof(lab2_node));
+    node -> key = key;
+    node -> left = NULL;
+    node -> right = NULL;
+    pthread_mutex_init(&node->mutex, NULL);
+    return node;
 }
 
 /* 
@@ -65,7 +74,6 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
     lab2_node *temp = tree -> root;
     if(temp == NULL) {
         tree -> root = new_node; // root가 NULL이면 새로운 노드를 root로 설정
-        return SUCCESS;
     } else {
         while(1) {
             if(temp -> key < new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 클 때
