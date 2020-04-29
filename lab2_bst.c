@@ -142,7 +142,57 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
  *  @return                 : status (success or fail)
  */
 int lab2_node_remove(lab2_tree *tree, int key) {
-    // You need to implement lab2_node_remove function.
+    lab2_node *temp = tree -> root;
+    lab2_node *parent, *child = NULL;
+    if(temp == NULL) {
+        return SUCCESS;
+    }
+    while(temp -> key != key) {
+        if(temp -> key < key) {
+            parent = temp;
+            temp = temp -> right;
+        } else {
+            parent = temp;
+            temp = temp -> left;
+        }
+    }
+    if(temp -> left == NULL && temp -> right == NULL) { // 아래에 자식 노드가 없을 경우
+        if(parent -> left == temp) {
+            parent -> left = NULL;
+        }
+        if(parent -> right == temp) {
+            parent -> right == NULL;
+        }
+        lab2_node_delete(temp);
+        return SUCCESS;
+    }
+    if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
+        if(temp -> left) {
+            child = temp -> left;
+        } else {
+            child = temp -> right;
+        }
+        if(parent -> left == temp) {
+            parent -> left = child;
+        } else {
+            parent -> right = child;
+        }
+        lab2_node_delete(temp);
+        return SUCCESS;
+    }
+    if(temp -> left != NULL && temp -> right != NULL) { // 아래에 2개의 자식 노드가 있을 경우
+        lab2_node *temp2 = temp -> right;
+        while(temp2->left != NULL){
+            parent = temp2;
+            temp2 = temp2->left;
+        }
+        temp->key = temp2->key;
+        if(temp2->right != NULL){
+            parent->left = temp2->right;
+        }
+        lab2_node_delete(temp2);
+        return SUCCESS;
+    }
 }
 
 /* 
@@ -179,8 +229,14 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
  *  @param lab2_tree *tree  : bst which you want to delete. 
  *  @return                 : status(success or fail)
  */
-void lab2_tree_delete(lab2_tree *tree) {
-    // You need to implement lab2_tree_delete function.
+void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
+    lab2_node *temp = tree -> root;
+    if(!temp) return;
+    while(temp) {
+        int key = temp -> key;
+        lab2_node_remove(tree, key);
+        temp = tree -> root;
+    }
 }
 
 /*
@@ -191,7 +247,7 @@ void lab2_tree_delete(lab2_tree *tree) {
  *  @param lab2_tree *tree  : bst node which you want to remove. 
  *  @return                 : status(success or fail)
  */
-void lab2_node_delete(lab2_node *node) {
-    // You need to implement lab2_node_delete function.
+void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
+    free(node);
 }
 
