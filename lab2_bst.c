@@ -91,7 +91,7 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
             }
         }
     }
-    return SUCCESS;
+    return LAB2_SUCCESS;
 }
 
 /* 
@@ -104,6 +104,31 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
  */
 int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
       // You need to implement lab2_node_insert_fg function.
+      lab2_node *temp = tree -> root;
+    if(temp == NULL) {
+        tree -> root = new_node;
+    } else {
+        while(1) {
+            if(temp -> key < new_node -> key) {
+                pthread_mutex_lock(&temp -> mutex);
+                if(!(temp -> right)) {
+                    temp -> right =  new_node;
+                    break;
+                }
+                temp = temp -> right;
+                pthread_mutex_unlock(&temp -> mutex);
+            } else if(temp -> key > new_node -> key) {
+                pthread_mutex_lock(&temp -> mutex);
+                if(!(temp -> left)) {
+                    temp -> left = new_node;
+                    break;
+                }
+                temp = temp -> left;
+                pthread_mutex_unlock(&temp -> mutex);
+            }
+        }
+    }
+    return LAB2_SUCCESS;
 }
 
 /* 
@@ -116,6 +141,7 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
  */
 int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
     // You need to implement lab2_node_insert_cg function.
+
 }
 
 /* 
@@ -130,7 +156,7 @@ int lab2_node_remove(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
     lab2_node *parent, *child = NULL;
     if(temp == NULL) {
-        return SUCCESS;
+        return LAB2_SUCCESS;
     }
     while(temp -> key != key) {
         if(temp -> key < key) {
@@ -149,7 +175,7 @@ int lab2_node_remove(lab2_tree *tree, int key) {
             parent -> right == NULL;
         }
         lab2_node_delete(temp);
-        return SUCCESS;
+        return LAB2_SUCCESS;
     }
     if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
         if(temp -> left) {
@@ -163,7 +189,7 @@ int lab2_node_remove(lab2_tree *tree, int key) {
             parent -> right = child;
         }
         lab2_node_delete(temp);
-        return SUCCESS;
+        return LAB2_SUCCESS;
     }
     if(temp -> left != NULL && temp -> right != NULL) { // 아래에 2개의 자식 노드가 있을 경우
         lab2_node *temp2 = temp -> right;
@@ -176,7 +202,7 @@ int lab2_node_remove(lab2_tree *tree, int key) {
             parent->left = temp2->right;
         }
         lab2_node_delete(temp2);
-        return SUCCESS;
+        return LAB2_SUCCESS;
     }
 }
 
