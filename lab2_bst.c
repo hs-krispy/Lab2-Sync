@@ -431,7 +431,7 @@ void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
  *  @return                 : status(success or fail)
  */
 void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
-    free(node);
+    // free(node);
     node = NULL;
 }
 
