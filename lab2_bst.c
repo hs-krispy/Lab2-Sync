@@ -112,7 +112,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
         tree -> root = new_node;
         return SUCCESS;
     } else {
-        pthread_mutex_lock(&new_node->mutex); // lock 걸어줌
+        pthread_mutex_lock(&temp->mutex); // lock 걸어줌
         while(1) {
             if(temp -> key < new_node -> key) {
                 if(!(temp -> right)) {
@@ -128,7 +128,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
                 temp = temp -> left;
             }
         }
-        pthread_mutex_unlock(&new_node->mutex); // lock 해제
+        pthread_mutex_unlock(&temp->mutex); // lock 해제
     }
     return SUCCESS;
 }
