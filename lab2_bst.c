@@ -240,6 +240,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
             parent -> right == NULL;
         }
         lab2_node_delete(temp);
+        pthread_mutex_unlock(&temp->lock);
         return SUCCESS;
     }
     if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
@@ -254,6 +255,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
             parent -> right = child;
         }
         lab2_node_delete(temp);
+        pthread_mutex_unlock(&temp->lock);
         return SUCCESS;
     }
     if(temp -> left != NULL && temp -> right != NULL) { // 아래에 2개의 자식 노드가 있을 경우
@@ -267,9 +269,10 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
             parent->left = temp2->right;
         }
         lab2_node_delete(temp2);
+        pthread_mutex_unlock(&temp->lock);
         return SUCCESS;
     }
-    pthread_mutex_unlock(&temp->lock);
+    pthread_mutex_lock(&temp->lock);
 }
 
 
