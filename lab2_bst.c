@@ -107,7 +107,30 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
  *  @return                     : status (success or fail)
  */
 int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
-    // You need to implement lab2_node_insert_cg function.
+    lab2_node *temp = tree -> root;
+    if(temp == NULL) {
+        tree -> root = new_node;
+        return SUCCESS;
+    } else {
+        pthread_mutex_lock(&new_node->mutex); // lock 걸어줌
+        while(1) {
+            if(temp -> key < new_node -> key) {
+                if(!(temp -> right)) {
+                    temp -> right =  new_node;
+                    break;
+                }
+                temp = temp -> right;
+            } else if(temp -> key > new_node -> key) {
+                if(!(temp -> left)) {
+                    temp -> left = new_node;
+                    break;
+                }
+                temp = temp -> left;
+            }
+        }
+        pthread_mutex_unlock(&new_node->mutex); // lock 해제
+    }
+    return SUCCESS;
 }
 
 /* 
