@@ -29,7 +29,6 @@
 void inorder(lab2_node *node) {
     if(!node) return;
     inorder(node -> left);
-    printf("%d \n", node -> key);
     inorder(node -> right);
 }
 int lab2_node_print_inorder(lab2_tree * tree) {
