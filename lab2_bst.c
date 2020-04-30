@@ -148,11 +148,11 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
  */
 int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
     // You need to implement lab2_node_insert_cg function. // lock 걸어줌
+    pthread_mutex_lock(&Mutex);
     lab2_node *temp = tree -> root;
-    pthread_mutex_lock(&new_node -> mutex);
     if(temp == NULL) {
 	tree -> root = new_node;
-	pthread_mutex_unlock(&new_node -> mutex);
+	pthread_mutex_unlock(&Mutex);
         return LAB2_SUCCESS;
     } else {
         while(1) {
@@ -171,7 +171,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
             }
         }
     }
-   pthread_mutex_unlock(&new_node -> mutex); // lock 해제
+   pthread_mutex_unlock(&Mutex); // lock 해제
     return LAB2_SUCCESS;
 }
 
@@ -315,8 +315,8 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
  *  @return                 : status (success or fail)
  */
 int lab2_node_remove_cg(lab2_tree *tree, int key) {
-    lab2_node *temp = tree -> root;
     pthread_mutex_lock(&Mutex);
+    lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
     while(temp -> key != key && temp != NULL) {
         parent = temp;
