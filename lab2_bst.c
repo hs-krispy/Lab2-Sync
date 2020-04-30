@@ -187,7 +187,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
  */
 int lab2_node_remove(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
-    lab2_node *parent, *child = NULL;
+    lab2_node *parent = NULL , *child, *succ, *succ_p;
     while(temp -> key != key && temp != NULL) {
         parent = temp;
         temp = (key < temp -> key) ? temp->left : temp->right;
@@ -195,43 +195,46 @@ int lab2_node_remove(lab2_tree *tree, int key) {
     if(temp == NULL) {
         return LAB2_SUCCESS;
     }
-    if(temp -> left == NULL && temp -> right == NULL) { // 아래에 자식 노드가 없을 경우
-        if(parent -> left == temp) {
-            parent -> left = NULL;
-        }
-        if(parent -> right == temp) {
-            parent -> right = NULL;
-        }
-        lab2_node_delete(temp);
-        return LAB2_SUCCESS;
-    }
-    if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
-        if(temp -> left) {
-            child = temp -> left;
+    if((temp -> left == NULL) && (temp -> right == NULL)) { // 아래에 자식 노드가 없을 경우
+        if (parent != NULL)
+        {
+            if(parent -> left == temp) {
+                parent -> left = NULL;
+            } else {
+                parent -> right = NULL;
+            }
         } else {
-            child = temp -> right;
+            tree -> root = NULL;
         }
-        if(parent -> left == temp) {
-            parent -> left = child;
+        
+    } else if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
+        child = (temp -> left != NULL) ? temp -> left : temp -> right;
+        if(parent != NULL) {
+            if(parent -> left == temp) {
+                parent -> left = child;
+            } else {
+                parent -> right = child;
+            }
         } else {
-            parent -> right = child;
+            tree -> root = child;
         }
-        lab2_node_delete(temp);
-        return LAB2_SUCCESS;
+    } else {
+          // 아래에 2개의 자식 노드가 있을 경우
+        succ_p = temp;
+        succ = temp -> right;
+        while(succ -> left != NULL) {
+            succ_p = succ;
+            succ = succ -> left;
+        }
+        if(succ_p -> left == succ) {
+            succ_p -> left = succ -> right;
+        } else {
+            succ_p -> right = succ -> right;
+        }
+        temp -> key = succ -> key;
+        temp = succ;
     }
-    if(temp -> left != NULL && temp -> right != NULL) { // 아래에 2개의 자식 노드가 있을 경우
-        lab2_node *temp2 = temp -> right;
-        while(temp2->left != NULL){
-            parent = temp2;
-            temp2 = temp2->left;
-        }
-        temp->key = temp2->key;
-        if(temp2->right != NULL){
-            parent->left = temp2->right;
-        }
-        lab2_node_delete(temp2);
-        return LAB2_SUCCESS;
-    }
+    lab2_node_delete(temp);
     return LAB2_SUCCESS;
 }
 
@@ -426,7 +429,7 @@ void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
  *  @return                 : status(success or fail)
  */
 void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
-    // free(node);
+    free(node);
     node = NULL;
 }
 
