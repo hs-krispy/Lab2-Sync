@@ -259,10 +259,12 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
     
+    pthread_mutex_lock(&tree -> mutex);
     while(temp != NULL && temp -> key != key) {
         parent = temp;
         temp = (key < temp -> key) ? temp->left : temp->right;
     }
+    pthread_mutex_unlock(&tree -> mutex);
     
     if(temp == NULL) {
         return LAB2_SUCCESS;
