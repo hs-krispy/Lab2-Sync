@@ -48,6 +48,7 @@ lab2_tree *lab2_tree_create() {
     // You need to implement lab2_tree_create function.
     lab2_tree *tree = (lab2_tree *) malloc(sizeof(lab2_tree));
     tree -> root = NULL;
+    pthread_mutex_init(&tree->mutex, NULL);
     return tree;
 }
 
@@ -121,17 +122,17 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
         while(1){
             if(temp -> key < new_node -> key) {
                 if(!(temp -> right)) {
-                    pthread_mutex_lock(&new_node -> mutex);
+                    pthread_mutex_lock(&(tree) -> mutex);
                     temp -> right =  new_node;
-                    pthread_mutex_unlock(&new_node -> mutex);
+                    pthread_mutex_unlock(&(tree) -> mutex);
                     break;
                 }
                 temp = temp -> right;
             }else if(temp -> key > new_node -> key) {
                 if(!(temp -> left)) {
-                    pthread_mutex_lock(&new_node -> mutex);
+                    pthread_mutex_lock(&(tree) -> mutex);
                     temp -> left = new_node;
-                    pthread_mutex_unlock(&new_node -> mutex);
+                    pthread_mutex_unlock(&(tree) -> mutex);
                     break;
                 }
                 temp = temp -> left;
@@ -259,14 +260,12 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
         pthread_mutex_unlock(&Mutex);
     }
     
-    pthread_mutex_lock(&Mutex);
     if(temp == NULL) {
         return LAB2_SUCCESS;
     }
-    pthread_mutex_unlock(&Mutex);
     
     if((temp -> left == NULL) && (temp -> right == NULL)) { // 아래에 자식 노드가 없을 경우
-    pthread_mutex_lock(&Mutex);
+        pthread_mutex_lock(&Mutex);
         if (parent != NULL)
         {
             if(parent -> left == temp) {
@@ -406,7 +405,7 @@ void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
  *  @return                 : status(success or fail)
  */
 void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
-    free(node);
+    // free(node);
     node = NULL;
 }
 
