@@ -196,7 +196,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
 int lab2_node_remove(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
-    while(temp -> key != key && temp != NULL) {
+    while(temp != NULL && (temp -> key != key)) {
         parent = temp;
         temp = (key < temp -> key) ? temp->left : temp->right;
     }
@@ -259,7 +259,7 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
     
-    while(temp -> key != key && temp != NULL) {
+    while(temp != NULL && temp -> key != key) {
         parent = temp;
         temp = (key < temp -> key) ? temp->left : temp->right;
     }
@@ -300,13 +300,13 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
         }
     } else {
           // 아래에 2개의 자식 노드가 있을 경우
+        pthread_mutex_lock(&tree -> mutex);
         succ_p = temp;
         succ = temp -> right;
         while(succ -> left != NULL) {
             succ_p = succ;
             succ = succ -> left;
         }
-        pthread_mutex_lock(&tree -> mutex);
         if(succ_p -> left == succ) {
             succ_p -> left = succ -> right;
         } else {
@@ -338,7 +338,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
     pthread_mutex_lock(&Mutex);
     lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
-    while(temp -> key != key && temp != NULL) {
+    while(temp != NULL && temp -> key != key) {
         parent = temp;
         temp = (key < temp -> key) ? temp->left : temp->right;
     }
