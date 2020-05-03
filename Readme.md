@@ -63,10 +63,6 @@ $ ./lab2_bst -t 4 -c 1000000
 
 If you want to delete the generated files, type  `make clean`
 
-~~~
-$ ./lab1_sched
-~~~
-
 
 
 ## Measure and Review
