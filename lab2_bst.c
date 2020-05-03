@@ -198,7 +198,11 @@ int lab2_node_remove(lab2_tree *tree, int key) {
     lab2_node *parent = NULL , *child, *succ, *succ_p;
     while(temp != NULL && (temp -> key != key)) {
         parent = temp;
-        temp = (key < temp -> key) ? temp->left : temp->right;
+        if(temp -> key < key) {
+            temp = temp -> right;
+        } else {
+            temp = temp -> left;
+        }
     }
     if(temp == NULL) {
         return LAB2_SUCCESS;
@@ -262,7 +266,11 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
     pthread_mutex_lock(&tree -> mutex);
     while(temp != NULL && temp -> key != key) {
         parent = temp;
-        temp = (key < temp -> key) ? temp->left : temp->right;
+        if(temp -> key < key) {
+            temp = temp -> right;
+        } else {
+            temp = temp -> left;
+        }
     }
     pthread_mutex_unlock(&tree -> mutex);
     
@@ -337,7 +345,11 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
     lab2_node *parent = NULL , *child, *succ, *succ_p;
     while(temp != NULL && temp -> key != key) {
         parent = temp;
-        temp = (key < temp -> key) ? temp->left : temp->right;
+        if(temp -> key < key) {
+            temp = temp -> right;
+        } else {
+            temp = temp -> left;
+        }
     }
     if(temp == NULL) {
         pthread_mutex_unlock(&Mutex);
