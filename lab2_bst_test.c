@@ -60,6 +60,8 @@ static void print_result(lab2_tree *tree,int num_threads,int node_count ,int is_
     printf("    total node count    : %d \n\n",node_count);
 
 
+
+
 }
 
 void* thread_job_delete(void *arg){
@@ -97,7 +99,9 @@ void* thread_job_insert(void *arg){
 }
 
 void bst_test(int num_threads,int node_count){
-
+    FILE *fp = fopen("BST.csv", "a+");
+    int fNodeCount = 0, fthread = 0; 
+    double fexecutionTime = 0;
     lab2_tree *tree;
     lab2_node *node;    
     struct timeval tv_insert_start, tv_insert_end, tv_delete_start, tv_delete_end, tv_start, tv_end;
@@ -108,6 +112,8 @@ void bst_test(int num_threads,int node_count){
     thread_arg *threads;
     int *data = (int*)malloc(sizeof(int)*node_count);
 
+    fNodeCount = node_count;
+    fthread = num_threads;
     srand(time(NULL));
     for (i=0; i < node_count; i++) { 
         data[i] = rand();
@@ -130,6 +136,11 @@ void bst_test(int num_threads,int node_count){
     gettimeofday(&tv_end, NULL);
     exe_time = get_timeval(&tv_start, &tv_end);
     print_result(tree,num_threads, node_count, LAB2_TYPE_SINGLE,LAB2_OPTYPE_INSERT ,exe_time);
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
+    
     lab2_tree_delete(tree);
 
     /* 
@@ -156,6 +167,11 @@ void bst_test(int num_threads,int node_count){
     gettimeofday(&tv_insert_end, NULL);
     exe_time = get_timeval(&tv_insert_start, &tv_insert_end);
     print_result(tree,num_threads, node_count, is_sync,LAB2_OPTYPE_INSERT ,exe_time);
+
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
     lab2_tree_delete(tree);
 
     /*
@@ -182,6 +198,11 @@ void bst_test(int num_threads,int node_count){
     gettimeofday(&tv_insert_end, NULL);
     exe_time = get_timeval(&tv_insert_start, &tv_insert_end);
     print_result(tree,num_threads, node_count, is_sync, LAB2_OPTYPE_INSERT,exe_time);
+
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
     lab2_tree_delete(tree);
     
     /* 
@@ -202,6 +223,11 @@ void bst_test(int num_threads,int node_count){
     gettimeofday(&tv_end, NULL);
     exe_time = get_timeval(&tv_start, &tv_end);
     print_result(tree ,num_threads, node_count, LAB2_TYPE_SINGLE, LAB2_OPTYPE_DELETE,exe_time);
+
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
     lab2_tree_delete(tree);
     
     /* 
@@ -236,6 +262,11 @@ void bst_test(int num_threads,int node_count){
     exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
 
     print_result(tree,num_threads, node_count, is_sync,LAB2_OPTYPE_DELETE,exe_time);
+
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
     lab2_tree_delete(tree);
 
     /* 
@@ -270,6 +301,12 @@ void bst_test(int num_threads,int node_count){
     exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
 
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+
+    fexecutionTime = exe_time;
+    // fprintf(fp, "%d ",fNodeCount);
+    fprintf(fp, "%d ", fthread);
+    fprintf(fp, "%f\n",fexecutionTime);
+    fclose(fp);
     lab2_tree_delete(tree);
 
     printf("\n");
