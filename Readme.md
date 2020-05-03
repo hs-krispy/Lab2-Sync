@@ -1,4 +1,4 @@
-# CPU Scheduling Algorithms
+# **Concurrent Binary Search Tree** 
 
 <img src="https://img.shields.io/github/issues/hs-krispy/Lab2_Sync"> <img src="https://img.shields.io/github/forks/hs-krispy/Lab2_Sync"> <img src="https://img.shields.io/github/stars/hs-krispy/Lab2_Sync"> <img src="https://img.shields.io/github/last-commit/hs-krispy/Lab2_Sync"> <img src="https://img.shields.io/github/repo-size/hs-krispy/Lab2_Sync"> [![HitCount](http://hits.dwyl.com/hs-krispy/Lab2-Sync.svg)](http://hits.dwyl.com/hs-krispy/Lab2-Sync)
 
