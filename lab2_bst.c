@@ -187,56 +187,62 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
  */
 int lab2_node_remove(lab2_tree *tree, int key) {
     lab2_node *temp = tree -> root;
-    lab2_node *parent, *child = NULL;
-    if(temp == NULL) {
-        return LAB2_SUCCESS;
-    }
-    while(temp -> key != key) {
+    lab2_node *parent = NULL , *child;
+    while(temp != NULL && (temp -> key != key)) {
+        parent = temp;
         if(temp -> key < key) {
-            parent = temp;
             temp = temp -> right;
         } else {
-            parent = temp;
             temp = temp -> left;
         }
     }
-    if(temp -> left == NULL && temp -> right == NULL) { // 아래에 자식 노드가 없을 경우
-        if(parent -> left == temp) {
-            parent -> left = NULL;
-        }
-        if(parent -> right == temp) {
-            parent -> right = NULL;
-        }
-        lab2_node_delete(temp);
+    if(temp == NULL) {
         return LAB2_SUCCESS;
     }
-    if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
+    if((temp -> left == NULL) && (temp -> right == NULL)) { // 아래에 자식 노드가 없을 경우
+        if (parent != NULL)
+        {
+            if(parent -> left == temp) {
+                parent -> left = NULL;
+            } else {
+                parent -> right = NULL;
+            }
+        } else {
+            tree -> root = NULL;
+        }
+
+    } else if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
         if(temp -> left) {
             child = temp -> left;
         } else {
             child = temp -> right;
         }
-        if(parent -> left == temp) {
-            parent -> left = child;
+        if(parent != NULL) {
+            if(parent -> left == temp) {
+                parent -> left = child;
+            } else {
+                parent -> right = child;
+            }
         } else {
-            parent -> right = child;
+            tree -> root = child;
         }
-        lab2_node_delete(temp);
-        return LAB2_SUCCESS;
+    } else {
+        // 아래에 2개의 자식 노드가 있을 경우
+        lab2_node *p = temp;
+        lab2_node * temp2 = temp -> right;
+        while(temp2 -> left != NULL) {
+            p = temp2;
+            temp2 = temp2 -> left;
+        }
+        if(p -> left == temp2) {  // 삭제할 노드의 오른쪽 자식의 왼쪽 자식이 있을때
+            p -> left = temp2 -> right;
+        } else { // 삭제할 노드의 오른쪽 자식의 왼쪽 자식이 없을때
+            p -> right = temp2 -> right;
+        }
+        temp -> key = temp2 -> key; // 삭제할 노드와 해당 노드의 오른쪽 자식의 왼쪽 끝 자식의 값을 바꿈
+        temp = temp2; // temp에 해당 노드를 넣음
     }
-    if(temp -> left != NULL && temp -> right != NULL) { // 아래에 2개의 자식 노드가 있을 경우
-        lab2_node *temp2 = temp -> right;
-        while(temp2->left != NULL){
-            parent = temp2;
-            temp2 = temp2->left;
-        }
-        temp->key = temp2->key;
-        if(temp2->right != NULL){
-            parent->left = temp2->right;
-        }
-        lab2_node_delete(temp2);
-        return LAB2_SUCCESS;
-    }
+    lab2_node_delete(temp);
     return LAB2_SUCCESS;
 }
 
