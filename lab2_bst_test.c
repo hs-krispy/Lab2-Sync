@@ -99,7 +99,7 @@ void* thread_job_insert(void *arg){
 }
 
 void bst_test(int num_threads,int node_count){
-    FILE *fp = fopen("BST.csv", "w");
+    FILE *fp = fopen("BST.csv", "a+");
     int fNodeCount = 0, fthread = 0; 
     double fexecutionTime = 0;
     lab2_tree *tree;
