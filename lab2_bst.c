@@ -122,26 +122,27 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
         tree -> root = new_node;
         pthread_mutex_unlock(&tree -> mutex);
     } else {
-	    
         while(1){
+            pthread_mutex_lock(&tree -> mutex);
             if(temp -> key < new_node -> key) {
                 if(!(temp -> right)) {
-                    pthread_mutex_lock(&temp -> mutex);
                     temp -> right =  new_node;
-                    pthread_mutex_unlock(&temp -> mutex);
+                    pthread_mutex_unlock(&tree -> mutex);
                     break;
                 }
                 temp = temp -> right;
+                pthread_mutex_unlock(&tree -> mutex);
             }else if(temp -> key > new_node -> key) {
                 if(!(temp -> left)) {
-                    pthread_mutex_lock(&temp -> mutex);
                     temp -> left = new_node;
-                    pthread_mutex_unlock(&temp -> mutex);
+                    pthread_mutex_unlock(&tree -> mutex);
                     break;
                 }
                 temp = temp -> left;
+                pthread_mutex_unlock(&tree -> mutex);
             } else {
                 break;
+                pthread_mutex_unlock(&tree -> mutex);
             }
         }
     }
