@@ -19,7 +19,7 @@
 
 #include "lab2_sync_types.h"
 pthread_mutex_t Mutex = PTHREAD_MUTEX_INITIALIZER;
-
+int count = 0;
 /*
  * TODO
  *  Implement funtction which traverse BST in in-order
@@ -27,14 +27,16 @@ pthread_mutex_t Mutex = PTHREAD_MUTEX_INITIALIZER;
  *  @param lab2_tree *tree  : bst to print in-order. 
  *  @return                 : status (success or fail)
  */
-void inorder(lab2_node *node) {
-    if(!node) return;
+int inorder(lab2_node *node) {
+    if(!node) return 0;
     inorder(node -> left);
+    count++;
     inorder(node -> right);
+    return count;
 }
 int lab2_node_print_inorder(lab2_tree * tree) {
-    inorder(tree -> root);
-    return LAB2_SUCCESS;
+    count = 0;
+    return inorder(tree -> root);
 }
 
 /*
