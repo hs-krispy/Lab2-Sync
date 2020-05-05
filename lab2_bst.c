@@ -19,11 +19,10 @@
 
 #include "lab2_sync_types.h"
 pthread_mutex_t Mutex = PTHREAD_MUTEX_INITIALIZER;
-
+int node_count = 0;
 /*
  * TODO
  *  Implement funtction which traverse BST in in-order
- *  
  *  @param lab2_tree *tree  : bst to print in-order. 
  *  @return                 : status (success or fail)
  */
@@ -34,7 +33,7 @@ void inorder(lab2_node *node) {
 }
 int lab2_node_print_inorder(lab2_tree * tree) {
     inorder(tree -> root);
-    return LAB2_SUCCESS;
+    printf("\nNode Count : %d", node_count);
 }
 
 /*
@@ -48,7 +47,9 @@ lab2_tree *lab2_tree_create() {
     // You need to implement lab2_tree_create function.
     lab2_tree *tree = (lab2_tree *) malloc(sizeof(lab2_tree));
     tree -> root = NULL;
+    node_count = 0;
     pthread_mutex_init(&tree->mutex, NULL);
+
     return tree;
 }
 
@@ -82,6 +83,8 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
     lab2_node *temp = tree -> root;
     if(temp == NULL) {
         tree -> root = new_node; // root가 NULL이면 새로운 노드를 root로 설정
+        node_count++;
+        return LAB2_SUCCESS;
     } else {
         while(1) {
             if(temp -> key < new_node -> key) { // 비교 노드의 키값보다 추가할 노드의 키값이 클 때
@@ -97,10 +100,12 @@ int lab2_node_insert(lab2_tree *tree, lab2_node *new_node) {
                 }
                 temp = temp -> left;
             } else {
+                node_count--;
                 break;
             }
         }
     }
+    node_count++;
     return LAB2_SUCCESS;
 }
 
@@ -118,31 +123,38 @@ int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node){
     if(temp == NULL) {
         pthread_mutex_lock(&tree -> mutex);
         tree -> root = new_node;
+        node_count++;
         pthread_mutex_unlock(&tree -> mutex);
+        return LAB2_SUCCESS;
     } else {
-	    
         while(1){
+            pthread_mutex_lock(&tree -> mutex);
             if(temp -> key < new_node -> key) {
                 if(!(temp -> right)) {
-                    pthread_mutex_lock(&temp -> mutex);
                     temp -> right =  new_node;
-                    pthread_mutex_unlock(&temp -> mutex);
+                    pthread_mutex_unlock(&tree -> mutex);
                     break;
                 }
                 temp = temp -> right;
+                pthread_mutex_unlock(&tree -> mutex);
             }else if(temp -> key > new_node -> key) {
                 if(!(temp -> left)) {
-                    pthread_mutex_lock(&temp -> mutex);
                     temp -> left = new_node;
-                    pthread_mutex_unlock(&temp -> mutex);
+                    pthread_mutex_unlock(&tree -> mutex);
                     break;
                 }
                 temp = temp -> left;
+                pthread_mutex_unlock(&tree -> mutex);
             } else {
+                node_count--;
+                pthread_mutex_unlock(&tree -> mutex);
                 break;
             }
         }
     }
+    pthread_mutex_lock(&tree -> mutex);
+    node_count++;
+    pthread_mutex_unlock(&tree -> mutex);
     return LAB2_SUCCESS;
 }
 
@@ -159,9 +171,10 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
     pthread_mutex_lock(&Mutex);
     lab2_node *temp = tree -> root;
     if(temp == NULL) {
-	tree -> root = new_node;
-	pthread_mutex_unlock(&Mutex);
-    return LAB2_SUCCESS;
+        tree -> root = new_node;
+        node_count++;
+        pthread_mutex_unlock(&Mutex);
+        return LAB2_SUCCESS;
     } else {
         while(1) {
             if(temp -> key < new_node -> key) {
@@ -177,10 +190,12 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node){
                 }
                 temp = temp -> left;
             } else {
+                node_count--;
                 break;
             }
         }
     }
+    node_count++;
    pthread_mutex_unlock(&Mutex); // lock 해제
     return LAB2_SUCCESS;
 }
@@ -246,6 +261,7 @@ int lab2_node_remove(lab2_tree *tree, int key) {
         temp -> key = succ -> key;
         temp = succ;
     }
+    node_count--;
     lab2_node_delete(temp);
     return LAB2_SUCCESS;
 }
@@ -260,10 +276,9 @@ int lab2_node_remove(lab2_tree *tree, int key) {
  */
 int lab2_node_remove_fg(lab2_tree *tree, int key) {
     // You need to implement lab2_node_remove_fg function.
+    pthread_mutex_lock(&Mutex);
     lab2_node *temp = tree -> root;
     lab2_node *parent = NULL , *child, *succ, *succ_p;
-    
-    pthread_mutex_lock(&tree -> mutex);
     while(temp != NULL && temp -> key != key) {
         parent = temp;
         if(temp -> key < key) {
@@ -272,47 +287,58 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
             temp = temp -> left;
         }
     }
-    pthread_mutex_unlock(&tree -> mutex);
-    
     if(temp == NULL) {
+        pthread_mutex_unlock(&Mutex);
         return LAB2_SUCCESS;
     }
+    pthread_mutex_unlock(&Mutex);
     pthread_mutex_lock(&tree -> mutex);
-    
     if((temp -> left == NULL) && (temp -> right == NULL)) { // 아래에 자식 노드가 없을 경우
-        if (parent != NULL)
-        {
-            
+        if (parent != NULL) {
             if(parent -> left == temp) {
                 parent -> left = NULL;
             } else {
                 parent -> right = NULL;
             }
-            pthread_mutex_unlock(&tree -> mutex);
         } else {
             tree -> root = NULL;
-            pthread_mutex_unlock(&tree -> mutex);
         }
+        node_count--;
+        lab2_node_delete(temp);
+        pthread_mutex_unlock(&tree -> mutex);
+        return LAB2_SUCCESS;
     } else if(temp -> left == NULL || temp -> right == NULL) { // 아래에 1개의 자식 노드가 있을 경우
+        pthread_mutex_lock(&temp -> mutex);
         child = (temp -> left != NULL) ? temp -> left : temp -> right;
+        pthread_mutex_unlock(&temp -> mutex);
+        pthread_mutex_lock(&child -> mutex);
         if(parent != NULL) {
             if(parent -> left == temp) {
                 parent -> left = child;
             } else {
                 parent -> right = child;
             }
-            pthread_mutex_unlock(&tree ->mutex);
         } else {
             tree -> root = child;
-            pthread_mutex_unlock(&tree ->mutex);
         }
+        node_count--;
+        pthread_mutex_unlock(&child -> mutex);
+        lab2_node_delete(temp);
+
+        pthread_mutex_unlock(&tree -> mutex);
+        return LAB2_SUCCESS;
     } else {
           // 아래에 2개의 자식 노드가 있을 경우
+        pthread_mutex_lock(&temp -> mutex);
         succ_p = temp;
         succ = temp -> right;
+        pthread_mutex_unlock(&temp -> mutex);
+        pthread_mutex_lock(&succ -> mutex);
         while(succ -> left != NULL) {
+            pthread_mutex_unlock(&succ -> mutex);
             succ_p = succ;
             succ = succ -> left;
+            pthread_mutex_lock(&succ -> mutex);
         }
         if(succ_p -> left == succ) {
             succ_p -> left = succ -> right;
@@ -321,16 +347,14 @@ int lab2_node_remove_fg(lab2_tree *tree, int key) {
         }
         temp -> key = succ -> key;
         temp = succ;
+        node_count--;
+        pthread_mutex_unlock(&succ -> mutex);
+        lab2_node_delete(temp);
+
         pthread_mutex_unlock(&tree -> mutex);
-    
+        return LAB2_SUCCESS;
     }
-    pthread_mutex_lock(&tree -> mutex);
-    lab2_node_delete(temp);
-    pthread_mutex_unlock(&tree -> mutex);
-    return LAB2_SUCCESS;
 }
-
-
 /* 
  * TODO
  *  Implement a function which remove nodes from the BST in coarse-grained manner.
@@ -394,6 +418,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key) {
         temp -> key = succ -> key;
         temp = succ;
     }
+    node_count--;
     lab2_node_delete(temp);
     pthread_mutex_unlock(&Mutex);
     return LAB2_SUCCESS;
@@ -427,7 +452,7 @@ void lab2_tree_delete(lab2_tree *tree) { // 트리를 초기화
  *  @return                 : status(success or fail)
  */
 void lab2_node_delete(lab2_node *node) { // 삭제한 노드의 메모리 할당 제거
-    free(node);
     node = NULL;
+    free(node);
 }
 
